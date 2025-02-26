@@ -13,19 +13,18 @@ public class PostgresExtractor {
         String query;
     }
 
-    private static DatabaseConfig parseDatabaseConfig(Map<String, Object> config) {
+    private static DatabaseConfig parseDatabaseConfig(Map<Object, Object> config) {
         return new DatabaseConfig() {{
             url = (String) config.get("db.url");
             username = (String) config.get("db.username");
             password = (String) config.get("db.password");
-            //TODO добавить новые запросы
             query = (String) config.get("db.query");
         }};
     }
 
-    public static Map<String, Object> loadDatabaseData(Map<String, Object> config) {
+    public static Map<Object, Object> loadDatabaseData(Map<Object, Object> config) {
         DatabaseConfig dbConfig = parseDatabaseConfig(config);
-        Map<String, Object> dbData = new HashMap<>();
+        Map<Object, Object> dbData = new HashMap<>();
 
         try (Connection conn = DriverManager.getConnection(
                 dbConfig.url,
@@ -40,9 +39,9 @@ public class PostgresExtractor {
 
                 while (rs.next()) {
                     for (int i = 1; i <= columnCount; i++) {
-                        String columnName = metaData.getColumnName(i);
-                        Object value = rs.getObject(i);
-                        dbData.put(columnName, value);
+                        Object firstColumn = rs.getString(1);
+                        Object secondColumn = rs.getString(2);
+                        dbData.put(firstColumn, secondColumn);
                     }
                 }
             }
